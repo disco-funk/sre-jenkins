@@ -1,10 +1,14 @@
 Master:
   AdminPassword: admin
   InstallPlugins:
-    - kubernetes:1.1
+    - kubernetes:1.6.2
     - workflow-aggregator:2.5
     - workflow-job:2.21
-    - credentials-binding:1.13
-    - git:3.6.4
+    - credentials-binding:1.16
+    - git:3.9.0
+    - blueocean:1.5.0
+    - gradle:1.28
+Agent:
+  Memory: "1024Mi"
 Persistence:
   Enabled: false
