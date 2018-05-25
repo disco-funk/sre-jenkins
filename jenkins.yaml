@@ -8,6 +8,7 @@ Master:
     - git:3.9.0
     - blueocean:1.5.0
     - pipeline-aws:1.26
+    - pipeline-utility-steps:2.1.0
 Agent:
   Memory: "1024Mi"
 Persistence:
