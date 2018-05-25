@@ -1,7 +1,8 @@
 final def label = "worker-${UUID.randomUUID().toString()}"
-final def version = "latest"
 final def region = "eu-west-2"
 final def imageName = "sre-camp18"
+
+def releaseVersion = ""
 
 podTemplate(label: label,
         containers: [containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)],
@@ -13,6 +14,10 @@ podTemplate(label: label,
                 parallel(
                     checkout: {
                         checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/disco-funk/sre-microservice']]])
+                        final def jsonFile = file('version.json')
+                        final def parsedJson = new groovy.json.JsonSlurper().parseText(jsonFile.text)
+                        final def snapshotVersion = parsedJson.version
+                        releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
                     },
                     installJDK: {
                         sh 'apk --update add openjdk8'
@@ -22,12 +27,12 @@ podTemplate(label: label,
             }
 
             stage('Build Binary') {
-                sh './gradlew build'
+                sh "./gradlew -PbuildNum=${releaseVersion} build"
             }
 
             stage('Push to AWS ECR') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    def imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${version}"
+                    def imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
                     sh "docker build -t ${imageTag} ."
                     sh "docker image ls"
 
