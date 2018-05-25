@@ -32,7 +32,7 @@ podTemplate(label: label,
                     sh "docker image ls"
 
                     withAWS(credentials: 'aws_credentials') {
-                        ecrLogin()
+                        sh ecrLogin()
                         sh "docker push ${imageTag}"
                     }
                 }
