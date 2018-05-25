@@ -7,7 +7,7 @@ Master:
     - credentials-binding:1.16
     - git:3.9.0
     - blueocean:1.5.0
-    - gradle:1.28
+    - pipeline-aws:1.26
 Agent:
   Memory: "1024Mi"
 Persistence:

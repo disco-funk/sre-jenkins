@@ -1,4 +1,7 @@
-def label = "worker-${UUID.randomUUID().toString()}"
+final def label = "worker-${UUID.randomUUID().toString()}"
+final def version = "latest"
+final def region = "eu-west-2"
+final def imageName = "sre-camp18"
 
 podTemplate(label: label,
         containers: [containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)],
@@ -18,14 +21,21 @@ podTemplate(label: label,
 
             }
 
-            stage('Build') {
+            stage('Build Binary') {
                 sh './gradlew build'
             }
 
-            stage('Docker Image') {
-                sh "docker build -t sre-camp18 ."
-                sh "docker tag sre-camp18:latest 870594606895.dkr.ecr.eu-west-2.amazonaws.com/sre-camp18:latest"
-                sh "docker image ls"
+            stage('Push to AWS ECR') {
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    def imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${version}"
+                    sh "docker build -t ${imageTag} ."
+                    sh "docker image ls"
+
+                    withAWS(credentials: 'aws_credentials') {
+                        ecrLogin()
+                        sh "docker push ${imageTag}"
+                    }
+                }
             }
         }
     }
