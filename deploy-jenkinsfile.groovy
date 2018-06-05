@@ -33,7 +33,8 @@ podTemplate(label: label,
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     sh "apk update && apk add git && helm init --upgrade"
                     sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls ./sre -la && pwd"
-                    sh "helm install ./sre"
+                    sh "helm package ./sre"
+                    sh "helm install sre-0.1.1.tgz"
                 }
             }
         }
