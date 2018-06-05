@@ -68,7 +68,7 @@ podTemplate(label: label,
                     sh 'mv $(pwd)/sre-' + releaseVersion + '.tgz $(pwd)/sre-helm-repo/'
                     sh 'git add $(pwd)/sre-helm-repo/sre-' + releaseVersion + '.tgz'
                     sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
-                    sh "git push"
+                    sh "git push --set-upstream origin master"
                 }
             }
         }
