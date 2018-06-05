@@ -2,7 +2,8 @@ final def label = "worker-${UUID.randomUUID().toString()}"
 final def region = "eu-west-2"
 final def imageName = "sre-camp18"
 
-def releaseVersion = "1.0.3"
+def releaseVersion = "1.0.9"
+def helmPackageVersion = "0.1.3"
 def imageTag = ""
 
 podTemplate(label: label,
@@ -33,8 +34,8 @@ podTemplate(label: label,
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     sh "apk update && apk add git && helm init --upgrade"
                     sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
-                    sh 'helm package $(pwd)/sre-helm/sre'
-                    sh 'helm upgrade --install sre $(pwd)/sre-0.1.2.tgz'
+                    sh 'helm package --version=' + helmPackageVersion + ' $(pwd)/sre-helm/sre'
+                    sh 'helm upgrade --install sre $(pwd)/sre-' + helmPackageVersion + '.tgz'
                 }
             }
         }
