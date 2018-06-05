@@ -68,7 +68,7 @@ podTemplate(label: label,
                         sh "helm package --version=${releaseVersion} ${baseDir}/sre-helm/sre"
                         sh "mv ${baseDir}/sre-${releaseVersion}.tgz ${baseDir}/sre-helm-repo/docs/"
                         sh "cd ${baseDir}/sre-helm-repo && git remote -v && ls -la && git status"
-                        sh "git add ${baseDir}/sre-helm-repo/docs/sre-${releaseVersion}.tgz && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
+                        sh "git add docs/sre-${releaseVersion}.tgz && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
                     }
                 }
             }
