@@ -54,17 +54,15 @@ podTemplate(label: label,
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     withCredentials([string(credentialsId: 'sre-jenkins', variable: 'githubToken')]) {
                         sh "apk update && apk add git && helm init --upgrade"
-                        sh "git config --global user.email 'man@themoon.com'"
-                        sh "git config --global user.name 'Helm User'"
+                        sh 'git config --global user.email "man@themoon.com" && git config --global user.name "Helm User"'
                         sh "git clone https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git"
                         sh "git clone https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
-                        sh 'cd /home/jenkins/workspace/sre-build/sre-helm'
                         sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' /home/jenkins/workspace/sre-build/sre-helm/sre/values.yaml'
                         sh 'helm package --version=' + releaseVersion + ' /home/jenkins/workspace/sre-build/sre-helm/sre'
                         sh 'mv /home/jenkins/workspace/sre-build/sre-' + releaseVersion + '.tgz /home/jenkins/workspace/sre-build/sre-helm-repo/docs/'
                         sh 'git add /home/jenkins/workspace/sre-build/sre-helm-repo/docs/sre-' + releaseVersion + '.tgz'
                         sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
-                        sh "git push --set-upstream origin master"
+                        sh "git push"
                     }
                 }
             }
