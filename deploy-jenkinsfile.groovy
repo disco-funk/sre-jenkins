@@ -34,7 +34,7 @@ podTemplate(label: label,
                     sh "apk update && apk add git && helm init --upgrade"
                     sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls ./sre -la && pwd"
                     sh 'helm package $(pwd)/sre-helm/sre'
-                    sh 'helm install $(pwd)/sre-helm/sre-0.1.1.tgz'
+                    sh 'helm install $(pwd)/sre-0.1.1.tgz'
                 }
             }
         }
