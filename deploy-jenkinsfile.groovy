@@ -14,7 +14,7 @@ podTemplate(label: label,
 
     node(label) {
         container('docker') {
-            stage() {
+            stage('Initialise') {
                 parallel(
                     "Pull from AWS ECR" : {
                         withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
