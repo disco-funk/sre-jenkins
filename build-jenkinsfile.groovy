@@ -33,7 +33,7 @@ podTemplate(label: label,
             stage('Build Docker Image') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
-                    sh "docker build  --build-arg RELEASE_VERSION=${releaseVersion} -t ${imageTag} ."
+                    sh "docker build --build-arg RELEASE_VERSION=${releaseVersion} -t ${imageTag} ."
                 }
             }
 
@@ -43,6 +43,18 @@ podTemplate(label: label,
                         sh ecrLogin()
                         sh "docker push ${imageTag}"
                     }
+                }
+            }
+        }
+
+        container('helm') {
+            stage('Helm push chart') {
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    sh "apk update && apk add git && helm init --upgrade"
+                    sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                    sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
+                    sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre-helm/sre'
+                    sh 'helm upgrade --install sre $(pwd)/sre-' + releaseVersion + '.tgz'
                 }
             }
         }
