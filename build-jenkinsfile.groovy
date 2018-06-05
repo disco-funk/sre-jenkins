@@ -53,6 +53,8 @@ podTemplate(label: label,
             stage('Helm push chart') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     sh "apk update && apk add git && helm init --upgrade"
+                    sh "git config --global user.email 'man@themoon.com'"
+                    sh "git config --global user.name 'Barry White'"
                     git(
                         url: 'https://github.com/disco-funk/sre-helm.git',
                         credentialsId: 'github'
