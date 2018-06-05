@@ -29,10 +29,9 @@ podTemplate(label: label,
 
         container('helm') {
             stage('Helm upgrade') {
-                sh "apk update && apk add git"
-                sh "helm init"
-                sh "git clone https://github.com/disco-funk/sre-helm.git"
-                sh "ls -la"
+                sh "apk update && apk add git && helm init"
+                sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                sh "helm upgrade sre ./sre"
             }
         }
     }
