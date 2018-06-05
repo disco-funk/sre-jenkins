@@ -56,17 +56,24 @@ podTemplate(label: label,
                         sh "apk update && apk add git && helm init --upgrade"
                         sh "git config --global user.email 'man@themoon.com'"
                         sh "git config --global user.name 'Helm User'"
+                        sh "mkdir sre-helm"
+                        sh "mkdir sre-helm-repo"
+                        sh "cd sre-helm"
                         git(
-                            url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git",
+                            url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git",
                             credentialsId: 'github'
                         )
-                        sh "pwd"
+                        sh 'export SRE_HELM=$(pwd) && echo $SRE_HELM'
                         sh "ls -la"
                         sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre/values.yaml'
                         sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre'
-                        sh 'mkdir -p $(pwd)/sre-helm-repo'
-                        sh 'mv $(pwd)/sre-' + releaseVersion + '.tgz $(pwd)/sre-helm-repo/'
-                        sh 'git add $(pwd)/sre-helm-repo/sre-' + releaseVersion + '.tgz'
+                        sh "cd ../sre-helm-repo"
+                        git(
+                                url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git",
+                                credentialsId: 'github'
+                        )
+                        sh 'mv $SRE_HELM/sre-' + releaseVersion + '.tgz $(pwd)/docs/'
+                        sh 'git add $(pwd)/docs/sre-' + releaseVersion + '.tgz'
                         sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
                         sh "git push --set-upstream origin master"
                     }
