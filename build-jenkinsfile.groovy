@@ -57,6 +57,8 @@ podTemplate(label: label,
                         url: 'https://github.com/disco-funk/sre-helm.git',
                         credentialsId: 'github'
                     )
+                    sh "pwd"
+                    sh "ls -la"
                     sh "cd sre-helm"
                     sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
                     sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre-helm/sre'
