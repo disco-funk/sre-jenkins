@@ -1,9 +1,5 @@
 final def label = "worker-${UUID.randomUUID().toString()}"
-final def region = "eu-west-2"
-final def imageName = "sre-camp18"
-
-def releaseVersion = "1.0.3"
-def imageTag = ""
+final def helmPkgVersion = "0.1.3"
 
 podTemplate(label: label,
         containers: [
@@ -14,27 +10,16 @@ podTemplate(label: label,
         volumes: [hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')]) {
 
     node(label) {
-        container('docker') {
-            stage('Initialise') {
-                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    withAWS(credentials: 'aws_credentials') {
-                        imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
-
-                        sh ecrLogin()
-                        sh "docker pull ${imageTag}"
-                        sh "docker image ls"
-                    }
-                }
-            }
-        }
-
         container('helm') {
             stage('Helm upgrade') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    sh "apk update && apk add git && helm init --upgrade"
-                    sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
-                    sh 'helm package $(pwd)/sre-helm/sre'
-                    sh 'helm upgrade --install sre $(pwd)/sre-0.1.2.tgz'
+                    withAWS(credentials: 'aws_credentials') {
+                        sh ecrLogin()
+                        sh "apk update && apk add git && helm init --upgrade"
+                        sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                        sh 'helm package --version ' + helmPkgVersion + ' $(pwd)/sre-helm/sre'
+                        sh 'helm upgrade --install sre $(pwd)/sre-' + helmPkgVersion + '.tgz'
+                    }
                 }
             }
         }
