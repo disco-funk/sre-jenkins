@@ -61,6 +61,7 @@ podTemplate(label: label,
                         sh "sed -i 's/1.0.0-SNAPSHOT/${releaseVersion}/g' ${baseDir}/sre-helm/sre/values.yaml"
                         sh "helm package --version=${releaseVersion} ${baseDir}/sre-helm/sre"
                         sh "mv ${baseDir}/sre-${releaseVersion}.tgz ${baseDir}/sre-helm-repo/docs/"
+                        sh "git remote set-url origin https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
                         sh "git add ${baseDir}/sre-helm-repo/docs/sre-${releaseVersion}.tgz"
                         sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
                         sh "git push origin HEAD:master"
