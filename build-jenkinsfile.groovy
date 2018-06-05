@@ -55,6 +55,7 @@ podTemplate(label: label,
                     sh "apk update && apk add git && helm init --upgrade"
                     sh "git config --global user.email 'man@themoon.com'"
                     sh "git config --global user.name 'Barry White'"
+                    sh "git remote set-url origin git@github.com:disco-funk/sre-helm.git"
                     git(
                         url: 'https://github.com/disco-funk/sre-helm.git',
                         credentialsId: 'github'
