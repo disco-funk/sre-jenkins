@@ -2,7 +2,7 @@ final def label = "worker-${UUID.randomUUID().toString()}"
 final def region = "eu-west-2"
 final def imageName = "sre-camp18"
 
-def releaseVersion = env.SRE_MICROSERVICE_VERSION
+def releaseVersion = params.SRE_MICROSERVICE_VERSION
 def helmPackageVersion = "0.1.${env.BUILD_NUMBER}"
 def imageTag = ""
 
