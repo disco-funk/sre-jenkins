@@ -16,10 +16,12 @@ podTemplate(label: label,
             stage('Initialise') {
                 parallel(
                     "Checkout SCM": {
-                        checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/disco-funk/sre-microservice']]])
-                        final def parsedJson = readJSON file: './version.json'
-                        final def snapshotVersion = parsedJson.version
-                        releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
+                        dir('sre-microservice') {
+                            git url: 'https://github.com/disco-funk/sre-microservice'
+                            final def parsedJson = readJSON file: './version.json'
+                            final def snapshotVersion = parsedJson.version
+                            releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
+                        }
                     },
                     "Install JDK": {
                         sh 'apk --update add openjdk8'
@@ -29,13 +31,17 @@ podTemplate(label: label,
             }
 
             stage('Build Binary') {
-                sh "./gradlew -PreleaseVersion=${releaseVersion} build"
+                dir('sre-microservice') {
+                    sh "./gradlew -PreleaseVersion=${releaseVersion} build"
+                }
             }
 
             stage('Build Docker Image') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
-                    sh "docker build --build-arg RELEASE_VERSION=${releaseVersion} -t ${imageTag} ."
+                    dir('sre-microservice') {
+                        imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
+                        sh "docker build --build-arg RELEASE_VERSION=${releaseVersion} -t ${imageTag} ."
+                    }
                 }
             }
 
