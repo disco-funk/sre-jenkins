@@ -2,8 +2,8 @@ final def label = "worker-${UUID.randomUUID().toString()}"
 final def region = "eu-west-2"
 final def imageName = "sre-camp18"
 
-def releaseVersion = "1.0.9"
-def helmPackageVersion = "0.1.5"
+def releaseVersion = env.SRE_MICROSERVICE_VERSION
+def helmPackageVersion = "0.1.${env.BUILD_NUMBER}"
 def imageTag = ""
 
 podTemplate(label: label,
