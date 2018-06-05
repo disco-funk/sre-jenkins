@@ -10,17 +10,15 @@ podTemplate(label: label,
         volumes: [hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')]) {
 
     node(label) {
-        container('docker') {
-            container('helm') {
-                stage('Helm upgrade') {
-                    withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                        withAWS(credentials: 'aws_credentials') {
-                            sh ecrLogin()
-                            sh "apk update && apk add git && helm init --upgrade"
-                            sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
-                            sh 'helm package --version ' + helmPkgVersion + ' $(pwd)/sre-helm/sre'
-                            sh 'helm upgrade --install sre $(pwd)/sre-' + helmPkgVersion + '.tgz'
-                        }
+        container('helm') {
+            stage('Helm upgrade') {
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    withAWS(credentials: 'aws_credentials') {
+                        sh ecrLogin()
+                        sh "apk update && apk add git && helm init --upgrade"
+                        sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                        sh 'helm package --version ' + helmPkgVersion + ' $(pwd)/sre-helm/sre'
+                        sh 'helm upgrade --install sre $(pwd)/sre-' + helmPkgVersion + '.tgz'
                     }
                 }
             }
