@@ -57,7 +57,7 @@ podTemplate(label: label,
                     sh "git config --global user.name 'Barry White'"
                     sh "git remote set-url origin git@github.com:disco-funk/sre-helm.git"
                     git(
-                        url: 'https://github.com/disco-funk/sre-helm.git',
+                        url: 'git@github.com:disco-funk/sre-helm.git',
                         credentialsId: 'github'
                     )
                     sh "pwd"
