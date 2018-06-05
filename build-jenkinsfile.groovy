@@ -56,24 +56,24 @@ podTemplate(label: label,
                         sh "apk update && apk add git && helm init --upgrade"
                         sh "git config --global user.email 'man@themoon.com'"
                         sh "git config --global user.name 'Helm User'"
-                        sh "mkdir sre-helm"
-                        sh "mkdir sre-helm-repo"
-                        sh "cd sre-helm"
+                        sh 'export SRE_BASE=$(pwd) && echo ${SRE_BASE}'
+                        sh 'mkdir ${SRE_BASE}/sre-helm'
+                        sh 'mkdir ${SRE_BASE}/sre-helm-repo'
+                        sh 'cd ${SRE_BASE}/sre-helm'
                         git(
                             url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git",
                             credentialsId: 'github'
                         )
-                        sh 'export SRE_HELM=$(pwd) && echo $SRE_HELM'
                         sh "ls -la"
-                        sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre/values.yaml'
-                        sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre'
-                        sh "cd ../sre-helm-repo"
+                        sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' ${SRE_BASE}/sre-helm/sre/values.yaml'
+                        sh 'helm package --version=' + releaseVersion + ' ${SRE_BASE}/sre-helm/sre'
+                        sh 'cd ${SRE_BASE}/sre-helm-repo'
                         git(
                                 url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git",
                                 credentialsId: 'github'
                         )
-                        sh 'mv $SRE_HELM/sre-' + releaseVersion + '.tgz $(pwd)/docs/'
-                        sh 'git add $(pwd)/docs/sre-' + releaseVersion + '.tgz'
+                        sh 'mv ${SRE_BASE}/sre-helm/sre-' + releaseVersion + '.tgz ${SRE_BASE}/sre-helm-repo/docs/'
+                        sh 'git add ${SRE_BASE}/sre-helm-repo/docs/sre-' + releaseVersion + '.tgz'
                         sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
                         sh "git push --set-upstream origin master"
                     }
