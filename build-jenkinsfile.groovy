@@ -63,7 +63,7 @@ podTemplate(label: label,
                         sh "mv ${baseDir}/sre-${releaseVersion}.tgz ${baseDir}/sre-helm-repo/docs/"
                         sh "git add ${baseDir}/sre-helm-repo/docs/sre-${releaseVersion}.tgz"
                         sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
-                        sh "git push origin master"
+                        sh "git push origin HEAD:master"
                     }
                 }
             }
