@@ -8,7 +8,8 @@ def imageTag = ""
 podTemplate(label: label,
         containers: [
              containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
-             containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
+             containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true),
+             containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true)
         ],
         volumes: [hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')]) {
 
@@ -29,9 +30,11 @@ podTemplate(label: label,
 
         container('helm') {
             stage('Helm upgrade') {
-                sh "apk update && apk add git && helm init"
-                sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls -la"
-                sh "helm upgrade sre ./sre"
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    sh "apk update && apk add git && helm init"
+                    sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls ./sre -la"
+                    sh "helm upgrade sre ./sre"
+                }
             }
         }
     }
