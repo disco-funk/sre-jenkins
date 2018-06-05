@@ -53,10 +53,19 @@ podTemplate(label: label,
             stage('Helm push chart') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     sh "apk update && apk add git && helm init --upgrade"
-                    sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                    git(
+                        url: 'https://github.com/disco-funk/sre-helm.git',
+                        credentialsId: 'github'
+                    )
+                    sh "cd sre-helm"
                     sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
                     sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre-helm/sre'
-                    sh 'helm upgrade --install sre $(pwd)/sre-' + releaseVersion + '.tgz'
+//                    sh 'helm upgrade --install sre $(pwd)/sre-' + releaseVersion + '.tgz'
+                    sh 'mkdir -p $(pwd)/sre-helm-repo'
+                    sh 'mv $(pwd)/sre-' + releaseVersion + '.tgz $(pwd)/sre-helm-repo/'
+                    sh 'git add $(pwd)/sre-helm-repo/sre-' + releaseVersion + '.tgz'
+                    sh "git commit -m 'Jenkins automated push - new helm package version ${releaseVersion}'"
+                    sh "git push"
                 }
             }
         }
