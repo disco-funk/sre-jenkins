@@ -62,13 +62,19 @@ podTemplate(label: label,
                         final baseDir = "/home/jenkins/workspace/sre-build"
                         sh "apk update && apk add git && helm init --upgrade"
                         sh 'git config --global user.email "man@themoon.com" && git config --global user.name "Helm User"'
-                        sh "git clone https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git"
-                        sh "git clone https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
-                        sh "sed -i 's/1.0.0-SNAPSHOT/${releaseVersion}/g' ${baseDir}/sre-helm/sre/values.yaml"
-                        sh "helm package --version=${releaseVersion} ${baseDir}/sre-helm/sre"
-                        sh "mv ${baseDir}/sre-${releaseVersion}.tgz ${baseDir}/sre-helm-repo/docs/"
-                        sh "cd ${baseDir}/sre-helm-repo && git remote -v && ls -la && git status"
-                        sh "git add docs/sre-${releaseVersion}.tgz && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
+                        dir('sre-helm') {
+                            git url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git"
+                            sh "sed -i 's/1.0.0-SNAPSHOT/${releaseVersion}/g' sre/values.yaml"
+                            sh "helm package --version=${releaseVersion} ./sre"
+                            sh "mv sre-${releaseVersion}.tgz /tmp/"
+                        }
+
+                        dir('sre-helm-repo') {
+                            git url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
+                            sh "mv /tmp/sre-${releaseVersion}.tgz ./docs/"
+                            sh "git remote -v && ls -la && git status"
+                            sh "git add docs/sre-${releaseVersion}.tgz && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
+                        }
                     }
                 }
             }
