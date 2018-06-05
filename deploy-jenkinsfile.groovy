@@ -6,7 +6,10 @@ def releaseVersion = "1.0.3"
 def imageTag = ""
 
 podTemplate(label: label,
-        containers: [containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true)],
+        containers: [
+             containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
+             containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true)
+        ],
         volumes: [hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')]) {
 
     node(label) {
@@ -22,6 +25,10 @@ podTemplate(label: label,
                     }
                 }
             }
+        }
+
+        container('helm') {
+            sh "helm init"
         }
     }
 }
