@@ -59,9 +59,8 @@ podTemplate(label: label,
                     )
                     sh "pwd"
                     sh "ls -la"
-                    sh "cd sre-helm"
-                    sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
-                    sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre-helm/sre'
+                    sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre/values.yaml'
+                    sh 'helm package --version=' + releaseVersion + ' $(pwd)/sre'
 //                    sh 'helm upgrade --install sre $(pwd)/sre-' + releaseVersion + '.tgz'
                     sh 'mkdir -p $(pwd)/sre-helm-repo'
                     sh 'mv $(pwd)/sre-' + releaseVersion + '.tgz $(pwd)/sre-helm-repo/'
