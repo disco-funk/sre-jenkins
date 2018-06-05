@@ -15,29 +15,25 @@ podTemplate(label: label,
     node(label) {
         container('docker') {
             stage('Initialise') {
-                parallel(
-                    "Pull from AWS ECR" : {
-                        withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                            withAWS(credentials: 'aws_credentials') {
-                                imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    withAWS(credentials: 'aws_credentials') {
+                        imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
 
-                                sh ecrLogin()
-                                sh "docker pull ${imageTag}"
-                                sh "docker image ls"
-                            }
-                        }
-                    },
-                    "Install Git" : {
-                        sh "apk update && apk add git"
+                        sh ecrLogin()
+                        sh "docker pull ${imageTag}"
+                        sh "docker image ls"
                     }
-                )
+                }
             }
         }
 
         container('helm') {
-            sh "helm init"
-            sh "git clone https://github.com/disco-funk/sre-helm"
-            sh "ls -la"
+            stage('Helm upgrade') {
+                sh "apk update && apk add git"
+                sh "helm init"
+                sh "git clone https://github.com/disco-funk/sre-helm.git"
+                sh "ls -la"
+            }
         }
     }
 }
