@@ -31,7 +31,7 @@ podTemplate(label: label,
         container('helm') {
             stage('Helm upgrade') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    sh "apk update && apk add git && helm init"
+                    sh "apk update && apk add git && helm init --upgrade"
                     sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls ./sre -la && pwd"
                     sh "helm delete sre --purge"
                     sh "helm install sre/"
