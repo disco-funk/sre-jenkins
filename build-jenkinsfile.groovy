@@ -55,9 +55,9 @@ podTemplate(label: label,
                     withCredentials([string(credentialsId: 'sre-jenkins', variable: 'githubToken')]) {
                         sh "apk update && apk add git && helm init --upgrade"
                         sh "git config --global user.email 'man@themoon.com'"
-                        sh "git config --global user.name 'Barry White'"
+                        sh "git config --global user.name 'Helm User'"
                         git(
-                            url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git",
+                            url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git",
                             credentialsId: 'github'
                         )
                         sh "pwd"
