@@ -30,7 +30,7 @@ podTemplate(label: label,
         container('helm') {
             stage('Helm upgrade') {
                 sh "apk update && apk add git && helm init"
-                sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
+                sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm && ls -la"
                 sh "helm upgrade sre ./sre"
             }
         }
