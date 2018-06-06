@@ -59,7 +59,6 @@ podTemplate(label: label,
             stage('Helm Package Chart') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     withCredentials([string(credentialsId: 'sre-jenkins', variable: 'githubToken')]) {
-                        final baseDir = "/home/jenkins/workspace/sre-build"
                         sh "apk update && apk add git && helm init --upgrade"
                         sh 'git config --global user.email "man@themoon.com" && git config --global user.name "Helm User"'
                         dir('sre-helm') {
@@ -72,8 +71,9 @@ podTemplate(label: label,
                         dir('sre-helm-repo') {
                             git url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
                             sh "mv /tmp/sre-${releaseVersion}.tgz ./docs/"
+                            sh "helm repo index --merge ./docs/"
                             sh "git remote -v && ls -la && git status"
-                            sh "git add docs/sre-${releaseVersion}.tgz && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
+                            sh "git add docs/* && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
                         }
                     }
                 }
