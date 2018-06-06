@@ -78,6 +78,19 @@ podTemplate(label: label,
                     }
                 }
             }
+
+            stage('Helm Package Pull and Deploy') {
+                withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
+                    withCredentials([string(credentialsId: 'sre-jenkins', variable: 'githubToken')]) {
+                        dir('sre-helm-repo') {
+                            sh "helm repo add sre-helm-repo https://disco-funk.github.io/sre-helm-repo/"
+                            sh "helm repo update"
+                            sh "helm search sre"
+                            sh 'helm upgrade --install sre sre-helm-repo/sre'
+                        }
+                    }
+                }
+            }
         }
     }
 }
