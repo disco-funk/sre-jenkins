@@ -63,7 +63,7 @@ podTemplate(label: label,
                         sh 'git config --global user.email "man@themoon.com" && git config --global user.name "Helm User"'
                         dir('sre-helm') {
                             git url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm.git"
-                            sh "sed -i 's/1.0.0-SNAPSHOT/${releaseVersion}/g' sre/values.yaml"
+                            sh "sed -i 's/2.0.0-SNAPSHOT/${releaseVersion}/g' sre/values.yaml"
                             sh "helm package --version=${releaseVersion} ./sre"
                             sh "mv sre-${releaseVersion}.tgz /tmp/"
                         }
