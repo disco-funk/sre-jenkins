@@ -71,7 +71,7 @@ podTemplate(label: label,
                         dir('sre-helm-repo') {
                             git url: "https://disco-funk:${githubToken}@github.com/disco-funk/sre-helm-repo.git"
                             sh "mv /tmp/sre-${releaseVersion}.tgz ./docs/"
-                            sh "helm repo index --merge ./docs/"
+                            sh "helm repo index docs/ --merge docs/index.yaml"
                             sh "git remote -v && ls -la && git status"
                             sh "git add docs/* && git commit -am 'Jenkins automated push - new helm package version ${releaseVersion}' && git push -u origin master"
                         }
