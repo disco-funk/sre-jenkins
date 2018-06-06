@@ -3,7 +3,7 @@ final def region = "eu-west-2"
 final def imageName = "sre-camp18"
 
 def releaseVersion = params.SRE_MICROSERVICE_VERSION
-def helmPackageVersion = "0.1.${env.BUILD_NUMBER}"
+def helmPackageVersion = "1.0.${env.BUILD_NUMBER}"
 def imageTag = ""
 
 podTemplate(label: label,
@@ -33,7 +33,7 @@ podTemplate(label: label,
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
                     sh "apk update && apk add git && helm init --upgrade"
                     sh "git clone https://github.com/disco-funk/sre-helm.git && cd sre-helm"
-                    sh 'sed -i \'s/1.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
+                    sh 'sed -i \'s/2.0.0-SNAPSHOT/' + releaseVersion + '/g\' $(pwd)/sre-helm/sre/values.yaml'
                     sh 'helm package --version=' + helmPackageVersion + ' $(pwd)/sre-helm/sre'
                     sh 'helm upgrade --install sre $(pwd)/sre-' + helmPackageVersion + '.tgz'
                 }
