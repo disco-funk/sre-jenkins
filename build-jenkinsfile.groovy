@@ -32,7 +32,7 @@ podTemplate(label: label,
 
             stage('Build Binary') {
                 dir('microservice/smallface/springboot') {
-                    sh "mvn versions:set -DnewVersion=${releaseVersion}"
+                    sh "mvn versions:set -DnewVersion=${releaseVersion} -B"
                     sh "mvn clean install -T 4C -B"
                 }
             }
