@@ -19,7 +19,7 @@ podTemplate(label: label,
                         dir('microservice') {
                             git url: 'https://github.com/jaksa76/cloudspeed.git', branch: 'big-phil'
                             sh 'ls -la'
-                            final def parsedJson = readJSON file: './cloudspeed/smallface/version.json'
+                            final def parsedJson = readJSON file: './smallface/version.json'
                             final def snapshotVersion = parsedJson.version
                             releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
                         }
