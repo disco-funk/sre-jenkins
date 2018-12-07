@@ -32,13 +32,14 @@ podTemplate(label: label,
 
             stage('Build Binary') {
                 dir('microservice/smallface/springboot') {
-                    sh "mvn clean install -T 4C -B" // ${releaseVersion} build"
+                    sh "mvn versions:set -DnewVersion=${releaseVersion}"
+                    sh "mvn clean install -T 4C -B"
                 }
             }
 
             stage('Build Docker Image') {
                 withCredentials([string(credentialsId: 'aws_account_number', variable: 'awsAccountNumber')]) {
-                    dir('sre-microservice') {
+                    dir('microservice/smallface/springboot') {
                         imageTag = "${awsAccountNumber}.dkr.ecr.${region}.amazonaws.com/${imageName}:${releaseVersion}"
                         sh "docker build --build-arg RELEASE_VERSION=${releaseVersion} -t ${imageTag} ."
                     }
