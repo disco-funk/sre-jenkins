@@ -1,6 +1,6 @@
 final def label = "worker-${UUID.randomUUID().toString()}"
 final def region = "eu-west-2"
-final def imageName = "sre-camp18"
+final def imageName = "smallface"
 
 def releaseVersion = ""
 def imageTag = ""
