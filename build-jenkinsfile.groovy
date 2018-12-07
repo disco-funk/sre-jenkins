@@ -25,7 +25,7 @@ podTemplate(label: label,
                         }
                     },
                     "Install Maven and JDK10": {
-                        sh 'apk --update add maven openjdk10'
+                        sh 'apk --update add maven openjdk8'
                     }
                 )
             }
