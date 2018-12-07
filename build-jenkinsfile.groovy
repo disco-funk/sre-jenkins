@@ -24,11 +24,8 @@ podTemplate(label: label,
                             releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
                         }
                     },
-                    "Install Maven": {
-                        sh 'apk --update add maven'
-                    },
-                    "Install JDK 10": {
-                        sh 'apk --update add openjdk10'
+                    "Install Maven and JDK10": {
+                        sh 'apk --update add maven openjdk10'
                     }
                 )
             }
