@@ -16,22 +16,22 @@ podTemplate(label: label,
             stage('Initialise') {
                 parallel(
                     "Checkout SCM": {
-                        dir('cmb-microservice-springboot') {
-                            git url: 'https://source.developers.google.com/p/cmb-hackathon/r/cmb-microservice-springboot'
-                            final def parsedJson = readJSON file: './version.json'
+                        dir('microservice') {
+                            git url: 'https://github.com/jaksa76/cloudspeed.git', branch: 'big-phil'
+                            final def parsedJson = readJSON file: './cloudspeed/smallface/version.json'
                             final def snapshotVersion = parsedJson.version
                             releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
                         }
                     },
-                    "Install JDK": {
-                        sh 'apk --update add openjdk8'
+                    "Install Maven": {
+                        sh 'apk --update add maven'
                     }
                 )
             }
 
             stage('Build Binary') {
-                dir('cmb-microservice-springboot') {
-                    sh "./gradlew -PreleaseVersion=${releaseVersion} build"
+                dir('microservice/cloudspeed/smallface') {
+                    sh "mvn clean install -T 4C -B" // ${releaseVersion} build"
                 }
             }
 
