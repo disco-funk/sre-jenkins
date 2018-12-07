@@ -1,7 +1,7 @@
 Master:
   AdminPassword: admin
   InstallPlugins:
-    - kubernetes:1.6.2
+    - kubernetes:1.13.7
     - workflow-aggregator:2.5
     - workflow-job:2.21
     - credentials-binding:1.16
@@ -13,3 +13,10 @@ Agent:
   Memory: "1024Mi"
 Persistence:
   Enabled: false
+rbac:
+  install: true
+  serviceAccountName: jenkins
+  # RBAC api version (currently either v1beta1 or v1alpha1)
+  apiVersion: v1beta1
+  # Cluster role reference
+  roleRef: cluster-admin

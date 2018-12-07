@@ -8,7 +8,7 @@ def imageTag = ""
 podTemplate(label: label,
         containers: [containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
                      containerTemplate(name: 'helm', image: 'lachlanevenson/k8s-helm:latest', command: 'cat', ttyEnabled: true),
-                     containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true)],
+                     containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:latest', command: 'cat', ttyEnabled: true)],
         volumes: [hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')]) {
 
     node(label) {
@@ -16,8 +16,8 @@ podTemplate(label: label,
             stage('Initialise') {
                 parallel(
                     "Checkout SCM": {
-                        dir('sre-microservice') {
-                            git url: 'https://github.com/disco-funk/sre-microservice'
+                        dir('cmb-microservice-springboot') {
+                            git url: 'https://source.developers.google.com/p/cmb-hackathon/r/cmb-microservice-springboot'
                             final def parsedJson = readJSON file: './version.json'
                             final def snapshotVersion = parsedJson.version
                             releaseVersion = snapshotVersion.replace('0-SNAPSHOT', env.BUILD_NUMBER)
@@ -27,11 +27,10 @@ podTemplate(label: label,
                         sh 'apk --update add openjdk8'
                     }
                 )
-
             }
 
             stage('Build Binary') {
-                dir('sre-microservice') {
+                dir('cmb-microservice-springboot') {
                     sh "./gradlew -PreleaseVersion=${releaseVersion} build"
                 }
             }
